@@ -1,12 +1,11 @@
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import create_engine
-from sqlalchemy import Column, Integer, String, Date, DateTime
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy import Column, Integer, String, Date, DateTime, ForeignKey
+from sqlalchemy.orm import sessionmaker, relationship, backref
 import sys
 
 ENGINE = None
 Session = None
-
 
 Base = declarative_base()
 
@@ -38,11 +37,13 @@ class Rating(Base):
     __tablename__ = "Ratings"
 
     id = Column(Integer, primary_key = True)
-    user_id = Column(Integer, nullable = False)
+    user_id = Column(Integer, ForeignKey('user_id') nullable = False)
     movie_id = Column(Integer, nullable = False)
     rating = Column(Integer, nullable = True)
     timestamp = Column(DateTime, nullable = True)
 
+    user = relationship("User"),
+        backref=backref("ratings", order_by=id)
 
 ### End class declarations
 def connect():
