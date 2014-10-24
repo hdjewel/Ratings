@@ -2,7 +2,7 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import create_engine
 from sqlalchemy import Column, Integer, String, Date, DateTime, ForeignKey
 from sqlalchemy.orm import sessionmaker, relationship, backref
-import sys
+import seed
 
 ENGINE = None
 Session = None
@@ -37,13 +37,12 @@ class Rating(Base):
     __tablename__ = "Ratings"
 
     id = Column(Integer, primary_key = True)
-    user_id = Column(Integer, ForeignKey('user_id') nullable = False)
+    user_id = Column(Integer, ForeignKey('users.id'), nullable = False)
     movie_id = Column(Integer, nullable = False)
     rating = Column(Integer, nullable = True)
     timestamp = Column(DateTime, nullable = True)
 
-    user = relationship("User"),
-        backref=backref("ratings", order_by=id)
+    user = relationship("User", backref=backref("ratings", order_by=id))
 
 ### End class declarations
 def connect():
@@ -52,84 +51,18 @@ def connect():
 
     ENGINE = create_engine("sqlite:///ratings.db", echo=True)
     Session = sessionmaker(bind=ENGINE)
+    Base.metadata.create_all(ENGINE)
 
     return Session()
 
-def load_rating_data(filename, session):
-
-    print (0, "file name = ", filename)
-
-    import csv
-    with open(filename, 'rb') as f:
-        reader = csv.reader(f, delimiter ='\t')
-        try:
-            for row in reader:
-                user_id, movie_id, rating, timestamp = row
-                rating = Rating(
-                    user_id=user_id, 
-                    movie_id=movie_id, 
-                    rating=rating, 
-                    timestamp=timestamp)
-                # session.add(rating)
-            
-        except csv.Error as e:
-            sys.exit('file %s, line %d: %s' % (filename, reader.line_num, e))   
-
-def load_movie_data(filename, session):
-    print (0, "file name = ", filename)
-
-    import csv
-    with open(filename, 'rb') as f:
-        reader = csv.reader(f, delimiter ='|')
-        try:
-            for row in reader:
-                movie_id, name, released_at, url, imdb_url = row[:5]
-                movie = Movie(
-                    id = movie_id,
-                    name=name, 
-                    released_at=released_at, 
-                    url=url, 
-                    imdb_url=imdb_url)
-                # session.add(rating)
-            print ("last imdb_url = ", imdb_url)
-        except csv.Error as e:
-            sys.exit('file %s, line %d: %s' % (filename, reader.line_num, e))   
-
-def load_user_data(filename, session):
-    print (0, "file name = ", filename)
-
-    import csv
-    with open(filename, 'rb') as f:
-        reader = csv.reader(f, delimiter ='|')
-        try:
-            for row in reader:
-                user_id, age, gender, occupation, zipcode = row[0:]
-                user = User(
-                    id = user_id,
-                    age=age, 
-                    gender=gender, 
-                    occupation=occupation, 
-                    zipcode=zipcode)
-                # session.add(rating)
-            
-        except csv.Error as e:
-            sys.exit('file %s, line %d: %s' % (filename, reader.line_num, e))   
 
 def main():
     
-    session = ""
-    # session = connect()
-    # Base.metadata.create_all(engine)
+    # session = ""
 
-    ratings = './seed_data/u.data'
-    movies = './seed_data/u.item'
-    users = './seed_data/u.user'
+    seed.main(session)
 
-    load_rating_data(ratings, session)
-    load_movie_data(movies, session)
-    load_user_data(users, session)
-
-    # session.commit()
+    session.commit()
 
 if __name__ == "__main__":
     main()
