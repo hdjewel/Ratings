@@ -1,13 +1,17 @@
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import create_engine
 from sqlalchemy import Column, Integer, String, Date, DateTime, ForeignKey
-from sqlalchemy.orm import sessionmaker, relationship, backref
-import seed
+from sqlalchemy.orm import sessionmaker, relationship, backref, scoped_session
 
-ENGINE = None
-Session = None
 
+engine = create_engine("sqlite:///ratings.db", echo=False)
+
+session = scoped_session(sessionmaker(bind=engine,
+                                      autocommit = False,
+                                      autoflush = False))
 Base = declarative_base()
+
+Base.query = session.query_property()
 
 ### Class declarations go here
 class User(Base):
@@ -15,7 +19,7 @@ class User(Base):
     __tablename__ = "users"
 
     id = Column(Integer, primary_key = True)
-    email = Column(String(64), nullable = False)
+    email = Column(String(64), nullable = True)
     password = Column(String(64), nullable = True)
     gender = Column(String(2), nullable = True)
     occupation = Column(String(80), nullable = True)
@@ -24,7 +28,7 @@ class User(Base):
 
 class Movie(Base):
     """docstring for Movie"""
-    __tablename__ = "Movies"
+    __tablename__ = "movies"
     
     id = Column(Integer, primary_key = True)
     name = Column(String(120), nullable = True)
@@ -34,20 +38,19 @@ class Movie(Base):
 
 class Rating(Base):
     """docstring for Rating"""
-    __tablename__ = "Ratings"
+    __tablename__ = "ratings"
 
     id = Column(Integer, primary_key = True)
     user_id = Column(Integer, ForeignKey('users.id'), nullable = False)
-    movie_id = Column(Integer, nullable = False)
-    rating = Column(Integer, nullable = True)
+    movie_id = Column(Integer, ForeignKey('movies.id'), nullable = False)
+    movie_rating = Column(Integer, nullable = True)
     timestamp = Column(DateTime, nullable = True)
 
     user = relationship("User", backref=backref("ratings", order_by=id))
+    movie = relationship("Movie", backref=backref("ratings", order_by=id))
 
 ### End class declarations
 def connect():
-    global ENGINE
-    global Session
 
     ENGINE = create_engine("sqlite:///ratings.db", echo=True)
     Session = sessionmaker(bind=ENGINE)
@@ -55,14 +58,9 @@ def connect():
 
     return Session()
 
-
 def main():
-    
-    # session = ""
-
-    seed.main(session)
-
-    session.commit()
+    pass
+    # return session
 
 if __name__ == "__main__":
     main()
