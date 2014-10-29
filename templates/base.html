@@ -1,6 +1,6 @@
 <html>
     <head>
-    <title> Movie Ratings </title>
+    {% block title%}{% endblock %}
     </head>
     <body>
         <div class="navbar navbar-inverse navbar-static-top">
@@ -12,7 +12,7 @@
             </div>
         </div>
 
-            {% block body %}{% endblock %}
+            {% block body %}This area doesn't get generated{% endblock %}
         <!--
         <script type="text/javascript" src="jquery"></script>
         <script type="text/javascript">

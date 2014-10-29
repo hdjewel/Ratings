@@ -32,6 +32,11 @@ def process_user_login():
             print ("this should display the user list of ratings")
             return redirect("/user_list")
         
+@app.route("/user")
+def ratings():
+    rating_list = model.session.query(model.Rating).limit(15).all()
+    return render_template("user.html", users=rating_list)
+    # the actual "thing" containing the list of users queried from the DB is users
 
 @app.route("/user_list")
 def user_list():
