@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+{% block body %}
+
+
+{% set total_order_amt = 0 %}
+<table class="table table-striped">
+
+    {{ melons }}
+<tr><th>Melon Name</th><th>Quantity</th><th>Price</th><th>Total</th></tr>
+{% for line in melons %}
+{% with (name, quantity, price, total) = line %}
+<tr>
+<td>{{ name }}</td><td>{{ quantity }}</td><td>{{ price }}</td><td>{{ total }}</td>
+{% set total_order_amt = total_order_amt + total %}
+<td>{{ total_order_amt }}</td>
+</tr>
+{{"1  line[3] = " }}{{ line[3] }} 
+{{"1.1  total_order_amt = "}}{{ total_order_amt  }} {{"\n"}}
+{% endwith %}
+
+{{"2 Trying to add two variables "}} {{ (total_order_amt + line[3]) }} 
+{% endfor %}
+
+</table>
+<h3>Total: {{ total }} {{ total_order_amt }} {{ " trying to print a total order amount"}}</h3>
+<a href="/checkout" class="btn btn-large btn-primary">Check Out</a>
+{% endblock %}

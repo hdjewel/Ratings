@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% block body %}
+
+
+{% set total_order_amt = 0 %}
+<table class="table table-striped">
+
+	{{ melons }}
+<tr><th>Melon Name</th><th>Quantity</th><th>Price</th><th>Total</th></tr>
+{% for melon in melons %}
+    <tr>
+        <td>{{ melon['name'] }}</td><td>{{ melon['quantity'] }}</td><td>{{ melon['price'] }}</td><td>{{ melon['total'] }}</td>
+    </tr>
+
+{% endfor %}
+
+</table>
+<h3>Total: {{ total }} {{ " trying to print a total order amount"}}</h3>
+<a href="/checkout" class="btn btn-large btn-primary">Check Out</a>
+{% endblock %}
+
