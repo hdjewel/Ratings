@@ -48,8 +48,12 @@ def user_list():
         
 @app.route("/user/<int:id>")
 def ratings(id):
-    rating_list = model.session.query(model.Rating).filter_by(
-        user_id=id).order_by(desc(model.Rating.movie_rating)).all()
+    rating_list = (model.session.query(model.Rating)
+                                .join(model.Movie).filter(model.Rating.user_id==id)
+                                .order_by(model.Movie.name)
+                                .all())
+    # SELECT * FROM ratings INNER JOIN movies ON (ratings.movie_id=movies.id) WHERE user_id=5
+    # ORDER BY movie_rating, name
     return render_template("user.html", user_id=id, ratings=rating_list)
 
 if __name__ == "__main__":
