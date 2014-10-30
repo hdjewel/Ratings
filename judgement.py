@@ -1,4 +1,5 @@
-from flask import Flask, render_template, redirect, request
+from flask import Flask, render_template, redirect, request, flash
+from sqlalchemy import desc
 import model
 
 app = Flask(__name__)
@@ -13,36 +14,43 @@ def get_user_login():
 def process_user_login():
     user_email = request.form.get("email")
     user_password = request.form.get("password")
-    print ("User email and password = ", user_email, " == ", user_password)
-    user = model.session.query(model.User).filter_by(
-                        email = user_email).first()
-    if user is None:
-        new_user = model.User(email = user_email, password = user_password)
-        model.session.add(new_user)
-        model.session.commit()
-        # add the user to the data base
-        # this is where I would add the user_email and user_password to the Users table
-        print "%s : %s" % (new_user.email, new_user.password)
-        return redirect("/user_list")
+
+    if str(user_email) == '' or str(user_password) == '':
+        flash("Please enter a valid email and password.", "error")
+        return render_template("login.html")
+
     else:
-        if user.password != user_password:
-            print "password entered does not match the value on the table"
+        user = model.session.query(model.User).filter_by(email = user_email).first()
+
+        if user is None:
+            # new_user = model.User(email = user_email, password = user_password)
+            # model.session.add(new_user)
+            # model.session.commit()
+            # add the user to the data base
+            # this is where I would add the user_email and user_password to the Users table
+            # print "%s : %s" % (new_user.email, new_user.password)
+            # return redirect("/user_list")
+            print "The email / password can not be found. Please enter a valid email and password."
             return render_template("login.html")
         else:
-            print ("this should display the user list of ratings")
-            return redirect("/user_list")
-        
-@app.route("/user")
-def ratings():
-    rating_list = model.session.query(model.Rating).limit(15).all()
-    return render_template("user.html", users=rating_list)
-    # the actual "thing" containing the list of users queried from the DB is users
+
+            if user.password != user_password:
+                print "password entered does not match the value on the table"
+                return render_template("login.html")
+            else:
+                return redirect("/user_list")
 
 @app.route("/user_list")
 def user_list():
     user_list = model.session.query(model.User).limit(15).all()
     return render_template("user_list.html", users=user_list)
     # the actual "thing" containing the list of users queried from the DB is users
+        
+@app.route("/user/<int:id>")
+def ratings(id):
+    rating_list = model.session.query(model.Rating).filter_by(
+        user_id=id).order_by(desc(model.Rating.movie_rating)).all()
+    return render_template("user.html", user_id=id, ratings=rating_list)
 
 if __name__ == "__main__":
     app.run(debug = True)

@@ -1,14 +1,22 @@
 {% extends 'base.html' %}
 
 {% block title %}
-    <title> rating list </title>
+    <title> User's Movie Ratings </title>
 {% endblock %}
 {% block body %}
+	<h3> User {{ user_id }}
+	</h3>
     {% for rating in ratings %}
 
-        <h2>rating {{ rating.id }}, has rated the movie: {{ rating.movie.name }} as a {{ rating.movie_ratings }}
-        </h2>
+		<tr>
+			<td>{{ rating.movie.name }}</td><td align="right">   {{ rating.movie_rating }}
+        	</td><br>
+		</tr>
 
     {% endfor %}
 
 {% endblock %}
+
+http://www.datatables.net/examples/basic_init/multi_col_sort.html
+sample of Show  ?? entries  where ?? is a drop down list
+

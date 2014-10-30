@@ -6,8 +6,9 @@
 {% block body %}
     {% for user in users %}
 
-        <h2>User <a href="/user"> {{ user.id }} </a>, age {{ user.age }} has {{ user.ratings|length }}
-        ratings</h2>
+        <ul>User <a href="/user/{{ user.id }}"> {{ user.id }} </a>, 
+        	age {{ user.age }} has {{ user.ratings|length }}
+        ratings</ul>
 
     {% endfor %}
 
