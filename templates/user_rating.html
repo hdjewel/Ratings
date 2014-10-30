@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+
+{% block body %}
+<h2>Your ratings</h2>
+<ul>
+    {% for rating in ratings %}
+    <li><a href="{{url_for("view_movie", id=rating.movie_id)}}">{{rating.movie.name}} &mdash; {{rating.rating}}</a></li>
+    {% else %}
+    <li>You haven't rated any movies yet!</li>
+    {% endfor %}
+</ul>
+{% endblock %}
